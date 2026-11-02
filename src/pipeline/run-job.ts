@@ -20,6 +20,7 @@ import type { OutputMode } from '../settings/model';
 import { detectType } from './detect';
 import type { DetectedType } from './detect';
 import { sha256 } from './hash';
+import type { OcrMode } from '../extract/docling/options';
 
 /**
  * One job's run through the pipeline; the queue's worker calls runJob for each
@@ -138,7 +139,7 @@ export async function runJob(deps: PipelineDeps, job: Job, signal: AbortSignal):
 		if (extracted.status === 'no-text' || !hasText(extracted.markdown)) {
 			if (extracted.status === 'extracted') await extracted.cleanup?.();
 			// A note saying "no text" reads as done; a failed job can be retried or set to not process
-			const failed = noTextOutcome(type.mime, job.sourcePath);
+			const failed = noTextOutcome(type.mime, job.sourcePath, policy.ocr);
 			deps.log(job, 'error', failed.message);
 			return failed;
 		}
@@ -172,16 +173,27 @@ export async function runJob(deps: PipelineDeps, job: Job, signal: AbortSignal):
 	}
 }
 
-/** The failure for a file the engine found no text in, with the likely fix for its kind. */
-export function noTextOutcome(mime: string, path: string): Extract<JobOutcome, { kind: 'failed' }> {
+/**
+ * The failure for a file the engine found no text in, with the likely fix for
+ * its kind. For a PDF it depends on OCR: automatic OCR already reads scanned
+ * pages, so finding nothing usually means blank pages; Every page only helps
+ * when the text is drawn as shapes rather than letters.
+ */
+export function noTextOutcome(mime: string, path: string, ocr: OcrMode = 'auto'): Extract<JobOutcome, { kind: 'failed' }> {
 	const kind = kindOf(mime);
 	const pdf = baseMime(mime) === 'application/pdf' || path.toLowerCase().endsWith('.pdf');
 	let message = 'No text found in this file.';
 	if (kind === 'image') message = 'No text found in this picture. Set Images to Read text and describe to get a description.';
-	else if (pdf) message = 'No text found. If this is a scan, set OCR to Every page under Extraction → Documents.';
+	else if (pdf) message = PDF_NO_TEXT[ocr];
 	else if (kind === 'audio' || kind === 'video') message = 'No speech found in this file.';
 	return { kind: 'failed', code: 'no-text', message };
 }
+
+const PDF_NO_TEXT: Record<OcrMode, string> = {
+	off: 'No text found. If this is a scan, turn on OCR under Extraction → Documents.',
+	auto: 'No text found, and OCR found none in the pictures either, so the pages are probably blank. If you can see text in the file, set OCR to Every page under Extraction → Documents.',
+	all: 'No text found, even with OCR on every page, so the pages are probably blank.',
+};
 
 /**
  * Keeps the text within the note size limit, for engines that did not cut it

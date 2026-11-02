@@ -40,7 +40,7 @@ Drop a file into your vault and Readable writes a note for it: title, tags and s
 
 ## Install
 
-Desktop only. Not in the community list yet, so use [BRAT](https://github.com/TfTHacker/obsidian42-brat) with `lyra-gen/readable`, or copy `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/lyra-gen/readable/releases) into `.obsidian/plugins/readable/`.
+Desktop only. In Obsidian, open **Settings → Community plugins → Browse**, search for **Readable** and install it, or open its [directory page](https://community.obsidian.md/plugins/readable) and choose **Add to Obsidian**. You can also copy `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/lyra-gen/readable/releases) into `.obsidian/plugins/readable/`.
 
 ## Quick start
 

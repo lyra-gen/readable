@@ -356,6 +356,7 @@ export function extractionPolicy(s: ReadableSettings): ExtractionPolicy {
 		video: s.video,
 		plainText: s.plainText,
 		ignoreExtensions: parseExtensions(s.ignoreExtensions),
+		ocr: s.doclingOcr,
 		// Readable's own server picks a model that reads pictures itself
 		visionModel: s.aiProvider === 'own' ? 'own' : usesServer(s.aiProvider) ? serverVisionModel(s) : '',
 	};

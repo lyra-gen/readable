@@ -3,6 +3,7 @@
  * from the detected MIME type; the extension only pre-filters the watcher
  * and picks the queue's lane, before any bytes are read.
  */
+import type { OcrMode } from './docling/options';
 export type FileKind = 'document' | 'image' | 'audio' | 'video' | 'text';
 
 export const DOCUMENT_POLICIES = ['read', 'skip'] as const;
@@ -28,6 +29,8 @@ export interface ExtractionPolicy {
 	plainText: TextPolicy;
 	/** Extensions never processed, lower case, without the dot. */
 	ignoreExtensions: string[];
+	/** When document pages go through OCR; decides what a "no text" failure suggests. */
+	ocr: OcrMode;
 	/** The model that describes pictures; 'own' when Readable's own server picks one; '' when none is set. */
 	visionModel: string;
 }

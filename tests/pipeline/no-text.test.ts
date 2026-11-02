@@ -47,7 +47,10 @@ void describe('Docling with no text', () => {
 
 void describe('the failure message', () => {
 	void test('names the likely fix for the kind of file', () => {
-		assert.match(noTextOutcome('application/pdf', 'a.pdf').message, /OCR/);
+		assert.match(noTextOutcome('application/pdf', 'a.pdf', 'off').message, /turn on OCR/);
+		assert.match(noTextOutcome('application/pdf', 'a.pdf', 'auto').message, /probably blank.*Every page/);
+		assert.match(noTextOutcome('application/pdf', 'a.pdf', 'all').message, /even with OCR on every page/);
+		assert.doesNotMatch(noTextOutcome('application/pdf', 'a.pdf', 'all').message, /set OCR/);
 		assert.match(noTextOutcome('image/jpeg', 'a.jpg').message, /describe/);
 		assert.match(noTextOutcome('audio/mpeg', 'a.mp3').message, /speech/);
 		assert.equal(noTextOutcome('text/html', 'a.html').message, 'No text found in this file.');
@@ -132,6 +135,7 @@ function pipeline(result: ExtractResult, content = 'hello') {
 		video: 'transcribe',
 		plainText: 'copy',
 		ignoreExtensions: [],
+		ocr: 'auto',
 		visionModel: '',
 	};
 	const deps: PipelineDeps = {

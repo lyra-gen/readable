@@ -1,6 +1,6 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/lyra-gen/readable/main/assets/banner-dark.svg">
     <img src="assets/banner-light.svg" alt="Readable" width="720">
   </picture>
 </p>
@@ -25,7 +25,7 @@
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/readable-dark.gif">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/lyra-gen/readable/main/assets/readme/readable-dark.gif">
     <img src="assets/readme/readable-light.gif" alt="Seven files dropped into Inbox are read into notes one by one; the board review note opens and scrolls to its summary" width="900">
   </picture>
 </p>
@@ -48,7 +48,7 @@ Desktop only. In Obsidian, open **Settings → Community plugins → Browse**, s
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/quickstart/dark/1-local-ai.png">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/lyra-gen/readable/main/assets/readme/quickstart/dark/1-local-ai.png">
     <img src="assets/readme/quickstart/light/1-local-ai.png" alt="Readable's LLM settings: provider Readable's own, the AI ready, Gemma 4 E4B as the model" width="800">
   </picture>
 </p>
@@ -57,7 +57,7 @@ Desktop only. In Obsidian, open **Settings → Community plugins → Browse**, s
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/quickstart/dark/2-ingest-menu.png">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/lyra-gen/readable/main/assets/readme/quickstart/dark/2-ingest-menu.png">
     <img src="assets/readme/quickstart/light/2-ingest-menu.png" alt="The file menu on a PDF with Ingest with Readable highlighted" width="800">
   </picture>
 </p>
@@ -66,7 +66,7 @@ Desktop only. In Obsidian, open **Settings → Community plugins → Browse**, s
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/quickstart/dark/3-queue.png">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/lyra-gen/readable/main/assets/readme/quickstart/dark/3-queue.png">
     <img src="assets/readme/quickstart/light/3-queue.png" alt="The queue with a board review being summarised and six files done" width="800">
   </picture>
 </p>
@@ -75,7 +75,7 @@ Desktop only. In Obsidian, open **Settings → Community plugins → Browse**, s
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/quickstart/dark/4-summary.png">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/lyra-gen/readable/main/assets/readme/quickstart/dark/4-summary.png">
     <img src="assets/readme/quickstart/light/4-summary.png" alt="A note with a summary of the board review above the extracted text" width="800">
   </picture>
 </p>
@@ -84,7 +84,7 @@ The note's title and tags come from what the file says, so search finds `Q3 boar
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/quickstart/dark/5-title-and-tags.png">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/lyra-gen/readable/main/assets/readme/quickstart/dark/5-title-and-tags.png">
     <img src="assets/readme/quickstart/light/5-title-and-tags.png" alt="The note's properties: title, source, tags such as quarterly-review and supply-chain-risk, model and extractor" width="800">
   </picture>
 </p>

@@ -1,0 +1,15 @@
+name: Feature request
+description: Something Readable should do, or do differently.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What you are trying to do
+      description: The files you work with and what you want from them. Describe them rather than attaching your own.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would help

@@ -1,0 +1,57 @@
+name: Bug report
+description: A file did not turn into the note you expected, or something in Readable broke.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. **Do not attach your own documents or paste their contents**: this issue is public. Describe the file instead (type, size, pages, language), or share a sample you made yourself.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what you got instead.
+    validations:
+      required: true
+  - type: textarea
+    id: job-log
+    attributes:
+      label: Job log
+      description: In the Readable queue, right-click the job → **View log** → **Copy log**, and paste it here. Remove anything private, such as file names.
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: file
+    attributes:
+      label: The file
+      placeholder: e.g. 2-page PDF, scanned, Russian; or 40-minute M4A recording
+  - type: input
+    id: readable-version
+    attributes:
+      label: Readable version
+      description: Settings → Community plugins → Readable.
+      placeholder: e.g. 0.1.4
+    validations:
+      required: true
+  - type: input
+    id: obsidian-version
+    attributes:
+      label: Obsidian version
+      description: Settings → General.
+      placeholder: e.g. 1.14.5
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options: [macOS (Apple silicon), macOS (Intel), Windows, Linux]
+    validations:
+      required: true
+  - type: dropdown
+    id: provider
+    attributes:
+      label: AI provider
+      description: Settings → Readable → LLM → Provider.
+      options: [Readable's own, Ollama, LM Studio, Another server, AI off]

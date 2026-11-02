@@ -31,6 +31,6 @@
 		"typescript-eslint": "^8.59.1"
 	},
 	"dependencies": {
-		"file-type": "^22.2.0"
+		"file-type": "^22.3.0"
 	}
 }

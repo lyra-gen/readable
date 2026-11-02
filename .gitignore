@@ -1,0 +1,44 @@
+# vscode (workspace settings are shared; keep personal state out)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+
+
+# Intellij
+*.iml
+.idea
+
+# npm
+node_modules
+
+# Don't include the compiled main.js file in the repo.
+# They should be uploaded to GitHub releases instead.
+main.js
+
+# Exclude sourcemaps
+*.map
+
+# obsidian
+data.json
+
+# Exclude macOS Finder (System Explorer) View States
+.DS_Store
+
+# hot-reload marker (dev only)
+.hotreload
+
+# python bytecode
+__pycache__/
+
+# test bundles
+.test-build/
+
+# Local agent instructions, kept out of the repo
+CLAUDE.md
+AGENTS.md
+
+# Local AI assistant setup, kept out of the repo
+.agents/
+.claude/
+skills-lock.json

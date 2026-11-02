@@ -1,0 +1,10 @@
+{
+	"id": "readable",
+	"name": "Readable",
+	"version": "0.1.2",
+	"minAppVersion": "1.13.2",
+	"description": "Turn PDFs, scans, recordings and Office files into notes.",
+	"author": "LyraGen",
+	"authorUrl": "https://lyragen.co.uk/",
+	"isDesktopOnly": true
+}

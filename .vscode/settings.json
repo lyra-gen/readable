@@ -1,0 +1,28 @@
+{
+	"editor.insertSpaces": false,
+	"editor.tabSize": 4,
+	"editor.formatOnSave": false,
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit"
+	},
+	"eslint.enable": true,
+	"eslint.useFlatConfig": true,
+	"eslint.validate": [
+		"javascript",
+		"typescript"
+	],
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"typescript.enablePromptUseWorkspaceTsdk": true,
+	"files.eol": "\n",
+	"files.insertFinalNewline": true,
+	"files.exclude": {
+		"main.js": true,
+		"*.map": true
+	},
+	"search.exclude": {
+		"node_modules": true,
+		"main.js": true
+	},
+	"biome.enabled": false,
+	"editor.defaultFormatter": null
+}

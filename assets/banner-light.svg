@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" width="1200" height="300" fill="none">
+  <rect width="1200" height="300" rx="24" fill="#ffffff"/>
+  <g transform="translate(340 78) scale(6)" stroke="#1e1e1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4"/>
+    <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+    <g stroke="#7c5cff">
+      <path d="M2 15h10"/>
+      <path d="m9 18 3-3-3-3"/>
+    </g>
+  </g>
+  <text x="520" y="168" fill="#1e1e1e" font-family="-apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="96" font-weight="700" letter-spacing="-3">Readable</text>
+  <text x="524" y="222" fill="#5c5c5c" font-family="-apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="28">Every file in your vault, as a note.</text>
+</svg>

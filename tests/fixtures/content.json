@@ -1,0 +1,22 @@
+{
+	"en": {
+		"title": "Quarterly report",
+		"lines": ["Revenue grew by twelve percent.", "We agreed to ship the new version in November.", "Owner: Ivan Petrov"],
+		"table": [["Region", "Q1", "Q2"], ["North", "120", "135"], ["South", "98", "110"]],
+		"page2": ["Second page", "The budget was spent as planned."],
+		"speech": "This is a test recording for Readable. Revenue grew by twelve percent, and we will ship the new version in November.",
+		"keywords": ["quarterly report", "revenue", "twelve percent", "november", "petrov"],
+		"speechKeywords": ["revenue", "twelve", "november"],
+		"tableKeywords": ["north", "120"]
+	},
+	"ru": {
+		"title": "Квартальный отчёт",
+		"lines": ["Выручка выросла на двенадцать процентов.", "Мы договорились выпустить новую версию в ноябре.", "Ответственный: Иван Петров"],
+		"table": [["Регион", "Q1", "Q2"], ["Север", "120", "135"], ["Юг", "98", "110"]],
+		"page2": ["Вторая страница", "Бюджет израсходован по плану."],
+		"speech": "Это тестовая запись. Выручка выросла на двенадцать процентов, и мы выпустим новую версию в ноябре.",
+		"keywords": ["квартальный отч", "выручка", "двенадцать процентов", "ноябре", "петров"],
+		"speechKeywords": ["выручка", "двенадцать", "ноябр"],
+		"tableKeywords": ["север", "120"]
+	}
+}

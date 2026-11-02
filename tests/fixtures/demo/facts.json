@@ -1,0 +1,31 @@
+{
+	"documents": {
+		"board-review.md": {
+			"facts": [
+				"4.8",
+				"12%|12 percent|twelve percent",
+				"commuter",
+				"34%|34 percent",
+				"battery",
+				"supplier",
+				"december"
+			],
+			"minFacts": 4
+		},
+		"quarterly-report.md": {
+			"facts": [],
+			"minFacts": 0
+		}
+	},
+	"images": {
+		"screenshot-en.png": {
+			"facts": [
+				"quarterly report",
+				"twelve percent|12%|12 percent",
+				"november",
+				"petrov"
+			],
+			"minFacts": 3
+		}
+	}
+}

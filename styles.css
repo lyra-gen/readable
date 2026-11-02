@@ -1,0 +1,266 @@
+/* Readable */
+
+.readable-status {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--size-2-1);
+}
+
+.readable-status.is-processing .readable-status-icon svg {
+	animation: readable-spin 1s linear infinite;
+}
+
+@keyframes readable-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.workspace-leaf-content[data-type='readable-queue'] .view-content {
+	padding: 0;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.readable-job-list {
+	flex: 1;
+	min-height: 0;
+	/* The status bar overlays the sidebar's bottom edge; leave room for the last row above it */
+	padding-bottom: max(var(--safe-area-inset-bottom), calc(var(--size-4-8) + var(--size-4-6)));
+}
+
+.readable-job-list .is-hidden,
+.readable-queue-search.is-hidden {
+	display: none;
+}
+
+/* Rows show the focus ring (has-focus); a ring round the whole list would double it */
+.readable-job-list:focus,
+.readable-job-list:focus-visible {
+	outline: none;
+}
+
+.readable-queue-search {
+	padding: var(--size-4-1) var(--size-4-3) var(--size-4-2);
+}
+
+.readable-job-time {
+	margin-inline-start: auto;
+	padding-inline-end: var(--size-4-2);
+	font-size: var(--font-ui-smaller);
+	color: var(--text-faint);
+	white-space: nowrap;
+}
+
+.readable-job .nav-file-tag {
+	margin-inline-start: 0;
+}
+
+.readable-job.is-failed .readable-job-state {
+	color: var(--color-red);
+}
+
+.readable-job.is-paused .readable-job-state {
+	color: var(--color-yellow);
+}
+
+.readable-job.is-cancelled .readable-job-state,
+.readable-job.is-skipped .readable-job-state {
+	color: var(--text-faint);
+}
+
+.readable-job.is-skipped.is-unsupported .readable-job-state {
+	color: var(--color-orange);
+}
+
+.readable-job-stage {
+	margin: 0 var(--size-4-3) 2px var(--size-4-6);
+	font-size: var(--font-ui-smaller);
+	color: var(--text-faint);
+}
+
+.readable-job.is-running .readable-job-state {
+	color: var(--text-accent);
+}
+
+.readable-progress-track {
+	height: 4px;
+	margin: 0 var(--size-4-3) var(--size-4-1) var(--size-4-6);
+	border-radius: var(--radius-s);
+	background: var(--background-modifier-border);
+	overflow: hidden;
+}
+
+.readable-progress-fill {
+	height: 100%;
+	width: var(--readable-progress, 0%);
+	background: var(--interactive-accent);
+	border-radius: var(--radius-s);
+	transition: width 0.3s ease;
+}
+
+.readable-progress-fill.is-indeterminate {
+	width: 35%;
+	/* Linear and well past both edges: eased, the segment crawled to a stop at the right edge before jumping back */
+	animation: readable-indeterminate 1.6s linear infinite;
+}
+
+@keyframes readable-indeterminate {
+	0% {
+		transform: translateX(-110%);
+	}
+	100% {
+		transform: translateX(400%);
+	}
+}
+
+.readable-drop-target {
+	position: relative;
+}
+
+.readable-drop-overlay {
+	display: none;
+	position: absolute;
+	inset: var(--size-4-2);
+	z-index: 10;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--size-4-2);
+	border: 2px dashed var(--interactive-accent);
+	border-radius: var(--radius-m);
+	background: hsla(var(--interactive-accent-hsl), 0.08);
+	color: var(--text-normal);
+	font-size: var(--font-ui-small);
+	pointer-events: none;
+}
+
+.readable-drop-target.is-dragover .readable-drop-overlay {
+	display: flex;
+}
+
+.readable-drop-overlay-icon svg {
+	width: var(--icon-l);
+	height: var(--icon-l);
+}
+
+.readable-notice-action {
+	margin-left: var(--size-4-2);
+	color: var(--text-accent);
+	text-decoration: none;
+	font-weight: var(--font-semibold);
+	cursor: pointer;
+}
+
+.readable-notice-action:hover {
+	text-decoration: underline;
+}
+
+.readable-badge {
+	display: inline-flex;
+	align-items: center;
+	color: var(--text-faint);
+}
+
+.readable-badge svg {
+	width: 10px;
+	height: 10px;
+}
+
+.nav-file-title:hover .readable-badge {
+	color: var(--text-muted);
+}
+
+.readable-badge.is-failed,
+.nav-file-title:hover .readable-badge.is-failed {
+	color: var(--text-error);
+}
+
+.readable-log-modal {
+	width: min(720px, 90vw);
+}
+
+.readable-log-meta {
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+	margin-bottom: var(--size-4-2);
+}
+
+.readable-log {
+	max-height: 50vh;
+	overflow-y: auto;
+	padding: var(--size-4-2);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-s);
+	background: var(--background-secondary);
+	font-family: var(--font-monospace);
+	font-size: var(--font-ui-smaller);
+	user-select: text;
+}
+
+.readable-log-row {
+	display: grid;
+	grid-template-columns: auto 3.5em 1fr;
+	gap: var(--size-4-2);
+	padding: 2px 0;
+	line-height: var(--line-height-tight);
+}
+
+.readable-log-time,
+.readable-log-level {
+	color: var(--text-faint);
+}
+
+.readable-log-level {
+	text-transform: uppercase;
+}
+
+.readable-log-row.is-warn .readable-log-level {
+	color: var(--color-orange);
+}
+
+.readable-log-row.is-error .readable-log-level,
+.readable-log-row.is-error .readable-log-message {
+	color: var(--color-red);
+}
+
+.readable-log-message {
+	overflow-wrap: anywhere;
+}
+
+.readable-log-empty {
+	color: var(--text-faint);
+}
+
+/* "In use" in place of a button on the Models page */
+.readable-in-use {
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+	padding: 0 var(--size-4-2);
+}
+
+/*
+ * Obsidian skips the divider above a group's first row only when that row is
+ * the first element. Rows hidden by a setting (the AI group with Readable's
+ * own AI) come first, so the first visible row kept a stray line at the top of
+ * its card. A row gets a divider only after a visible row.
+ */
+.readable-settings .setting-group .setting-item:not(.setting-item-heading)::before {
+	content: none;
+}
+
+.readable-settings .setting-group .setting-item:not([style*='display: none']) ~ .setting-item:not(.setting-item-heading)::before {
+	content: '';
+}
+
+/* Queue rows sliding to a new place: opaque while they move, so crossing rows never show through each other */
+.workspace-leaf-content[data-type='readable-queue'] .tree-item.is-sliding {
+	position: relative;
+	z-index: 1;
+	background-color: var(--readable-row-bg, var(--background-secondary));
+}
+
+.workspace-leaf-content[data-type='readable-queue'] .tree-item.is-sliding-over {
+	z-index: 2;
+}

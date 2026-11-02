@@ -1,0 +1,36 @@
+{
+	"name": "readable",
+	"version": "0.1.2",
+	"description": "Readable: Obsidian ingestion plugin by LyraGen",
+	"main": "main.js",
+	"type": "module",
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"version": "node version-bump.mjs && git add manifest.json versions.json",
+		"lint": "eslint .",
+		"prepare": "husky",
+		"test": "node scripts/test.mjs",
+		"fixtures": "./scripts/make-fixtures.sh"
+	},
+	"keywords": [],
+	"license": "MIT",
+	"devDependencies": {
+		"@commitlint/cli": "^21.2.4",
+		"@commitlint/config-conventional": "^21.2.4",
+		"@eslint/js": "^9.39.4",
+		"@types/node": "^22.15.17",
+		"esbuild": "0.25.5",
+		"eslint": "^9.39.4",
+		"eslint-plugin-obsidianmd": "^0.4.0",
+		"globals": "^17.6.0",
+		"husky": "^9.1.7",
+		"jiti": "^2.6.1",
+		"obsidian": "^1.14.4",
+		"typescript": "^5.8.3",
+		"typescript-eslint": "^8.59.1"
+	},
+	"dependencies": {
+		"file-type": "^22.2.0"
+	}
+}

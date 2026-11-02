@@ -1,6 +1,6 @@
 {
 	"name": "readable",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"description": "Readable: Obsidian ingestion plugin by LyraGen",
 	"main": "main.js",
 	"type": "module",

@@ -7,6 +7,17 @@ updates:
     groups:
       dev-tools:
         dependency-type: development
+    ignore:
+      # Majors that need their own migration: typescript-eslint lags new TypeScript majors,
+      # and Node types follow the Node version inside Obsidian's Electron, not the latest Node
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      - dependency-name: eslint
+        update-types: [version-update:semver-major]
+      - dependency-name: '@eslint/js'
+        update-types: [version-update:semver-major]
+      - dependency-name: '@types/node'
+        update-types: [version-update:semver-major]
     commit-message:
       prefix: chore
       include: scope

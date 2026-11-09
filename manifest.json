@@ -1,7 +1,7 @@
 {
 	"id": "readable",
 	"name": "Readable",
-	"version": "0.1.5",
+	"version": "0.1.6",
 	"minAppVersion": "1.13.2",
 	"description": "Turn PDFs, scans, recordings and Office files into notes.",
 	"author": "LyraGen",

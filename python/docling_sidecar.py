@@ -630,6 +630,13 @@ def convert(request_id, params):
     started = time.monotonic()
     if options.get("kind") in ("audio", "video"):
         return transcribe(request_id, path, options, started)
+    # Old .doc/.xls/.ppt: Docling has LibreOffice convert them, and reads the command from here on each file.
+    # The plugin finds it (Obsidian's PATH is too bare for Docling's own lookup); every document request sets it.
+    libreoffice = options.get("libreoffice")
+    if libreoffice:
+        os.environ["DOCLING_LIBREOFFICE_CMD"] = libreoffice
+    else:
+        os.environ.pop("DOCLING_LIBREOFFICE_CMD", None)
     if options.get("kind") == "image" or path.lower().endswith(HEIF_SUFFIXES):
         prepared = prepared_image(path)
         if prepared:

@@ -39,6 +39,8 @@ export interface ManagedDoclingDeps {
 	prepare?: () => Promise<void>;
 	/** Sidecar stderr and install output, for the dev log. */
 	devLog: (line: string) => void;
+	/** Where LibreOffice is, for old Office files; `findLibreOffice` unless a test stands in. */
+	findLibreOffice?: () => Promise<string | null>;
 }
 
 const IDLE_MS = 10 * 60_000;

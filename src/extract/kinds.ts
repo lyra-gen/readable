@@ -84,7 +84,7 @@ const KIND_BY_EXT: Record<string, FileKind> = Object.fromEntries([
 	...['mp3', 'wav', 'm4a', 'aac', 'ogg', 'oga', 'flac', 'wma', 'opus', 'aiff', 'aif', 'amr', 'caf', 'm4b', 'mka', 'mp2', 'spx', 'weba', 'f4a'].map((e) => [e, 'audio'] as const),
 	...['mp4', 'mov', 'avi', 'mkv', 'webm', 'm4v', 'wmv', 'ogv', '3gp', 'flv', 'mpg', 'mpeg', 'm2ts', 'mts', 'm2t', '3g2', 'f4v'].map((e) => [e, 'video'] as const),
 	...['txt', 'json', 'log'].map((e) => [e, 'text'] as const),
-	...['pdf', 'docx', 'doc', 'pptx', 'ppt', 'xlsx', 'xls', 'odt', 'odp', 'ods', 'pages', 'numbers', 'key', 'rtf', 'html', 'htm', 'mhtml', 'csv', 'md', 'epub'].map(
+	...['pdf', 'docx', 'doc', 'dot', 'pptx', 'ppt', 'pot', 'pps', 'xlsx', 'xls', 'xlt', 'odt', 'odp', 'ods', 'pages', 'numbers', 'key', 'rtf', 'html', 'htm', 'mhtml', 'csv', 'md', 'epub'].map(
 		(e) => [e, 'document'] as const,
 	),
 ]);

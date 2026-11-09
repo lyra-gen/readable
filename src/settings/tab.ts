@@ -6,6 +6,7 @@ import type { ExtractFormat } from '../notes/format';
 import type { SummaryLength } from '../llm/summarise';
 import { confirmAndInstall, confirmAndInstallAddon, confirmAndInstallSpeech, confirmAndRemove, describeAddon, describeInstall } from '../ui/docling-install';
 import { addonAvailable } from '../extract/docling/managed/installer';
+import { describeLegacySupport, findLibreOffice, LIBREOFFICE_DOWNLOAD_URL } from '../extract/docling/managed/legacy-office';
 import type { AddonId } from '../extract/docling/managed/installer';
 import { resolveOcrLanguages, systemOcrLanguages } from '../extract/docling/ocr-languages';
 import type { OcrEngine } from '../extract/docling/options';
@@ -550,6 +551,40 @@ export class ReadableSettingTab extends PluginSettingTab {
 		return docling.onChange(draw);
 	}
 
+	/** Old Office files: read with LibreOffice when it is installed, else (Mac, .doc) textutil. Get links to the download; Check again looks once more. */
+	private renderLegacyOffice(setting: Setting): () => void {
+		let disposed = false;
+		const draw = async () => {
+			const found = await findLibreOffice();
+			if (disposed) return;
+			setting.setDesc(describeLegacySupport(found));
+			setting.controlEl.empty();
+			if (found) {
+				setting.setTooltip(found);
+				return;
+			}
+			setting.addExtraButton((b) =>
+				b
+					.setIcon('refresh-cw')
+					.setTooltip('Check again')
+					.onClick(() => void draw()),
+			);
+			setting.addButton((b) =>
+				b.setButtonText('Get LibreOffice').onClick(() => {
+					window.open(LIBREOFFICE_DOWNLOAD_URL);
+				}),
+			);
+		};
+		void draw();
+		// LibreOffice is often installed while settings are closed; looking again on focus catches it without a click
+		const onFocus = () => void draw();
+		window.addEventListener('focus', onFocus);
+		return () => {
+			disposed = true;
+			window.removeEventListener('focus', onFocus);
+		};
+	}
+
 	getSettingDefinitions(): SettingDefinitionItem<SettingKey>[] {
 		this.watchLlama();
 		// The Models row and the summary warnings read the scan; without it they say "None downloaded" until the Models page opens
@@ -682,6 +717,12 @@ export class ReadableSettingTab extends PluginSettingTab {
 											defaultValue: DEFAULT_SETTINGS.documents,
 											options: DOCUMENT_LABELS,
 										},
+									},
+									{
+										name: 'Old Office files',
+										aliases: ['doc', 'xls', 'ppt', 'libreoffice', 'word 97', 'legacy'],
+										visible: readsDocuments,
+										render: (setting) => this.renderLegacyOffice(setting),
 									},
 									{
 										name: 'OCR',

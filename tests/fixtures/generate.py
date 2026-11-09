@@ -3,7 +3,9 @@
 Run on macOS with scripts/make-fixtures.sh, which supplies the tools: the
 Python from Readable's managed Docling install (python-docx, python-pptx,
 openpyxl, odfdo, Pillow, pillow-heif), headless Chrome for text-layer PDFs,
-`say` for speech, `sips` for HEIC and the managed ffmpeg for audio and video.
+`say` for speech, `sips` for HEIC, the managed ffmpeg for audio and video,
+and LibreOffice for the old binary Office files (.doc, .xls, .ppt and their
+templates), saved from the .docx/.xlsx/.pptx built here.
 The iWork files (iwork-en.*) are not built here: they are Docling's own test
 files (tests/data in docling-project/docling, MIT licence).
 The outputs are committed, so tests never need these tools.
@@ -24,6 +26,7 @@ OUT = os.path.join(HERE, "files")
 CONTENT = json.load(open(os.path.join(HERE, "content.json"), encoding="utf-8"))
 CHROME = os.environ["CHROME"]
 FFMPEG = os.environ["FFMPEG"]
+SOFFICE = os.environ.get("SOFFICE", "/Applications/LibreOffice.app/Contents/MacOS/soffice")
 FONT = "/System/Library/Fonts/Supplemental/Arial.ttf"
 FONT_BOLD = "/System/Library/Fonts/Supplemental/Arial Bold.ttf"
 VOICES = {"en": "Samantha", "ru": "Milena"}
@@ -238,6 +241,34 @@ def opendocument(lang, c):
     deck.save(out(f"slides-{lang}.odp"))
 
 
+# Old binary Office formats: extension -> (LibreOffice filter, the modern file it is saved from)
+LEGACY = {
+    "doc": ("MS Word 97", "doc-{lang}.docx"),
+    "dot": ("MS Word 97 Vorlage", "doc-{lang}.docx"),
+    "xls": ("MS Excel 97", "sheet-{lang}.xlsx"),
+    "xlt": ("MS Excel 97 Vorlage/Template", "sheet-{lang}.xlsx"),
+    "ppt": ("MS PowerPoint 97", "slides-{lang}.pptx"),
+    "pot": ("MS PowerPoint 97 Vorlage", "slides-{lang}.pptx"),
+    "pps": ("MS PowerPoint 97 AutoPlay", "slides-{lang}.pptx"),
+}
+# Templates in English only; the formats themselves in both languages, since old files store text in code pages
+LEGACY_LANGS = {"doc": ("en", "ru"), "xls": ("en", "ru"), "ppt": ("en", "ru"), "dot": ("en",), "xlt": ("en",), "pot": ("en",), "pps": ("en",)}
+LEGACY_STEM = {"doc": "doc", "dot": "doc", "xls": "sheet", "xlt": "sheet", "ppt": "slides", "pot": "slides", "pps": "slides"}
+
+
+def legacy(lang, c):
+    for ext, (filter_name, source) in LEGACY.items():
+        if lang not in LEGACY_LANGS[ext]:
+            continue
+        with tempfile.TemporaryDirectory() as tmp:
+            run(
+                SOFFICE, f"-env:UserInstallation=file://{tmp}/profile", "--headless", "--norestore",
+                "--convert-to", f"{ext}:{filter_name}", "--outdir", tmp, out(source.format(lang=lang)),
+            )
+            produced = os.path.join(tmp, os.path.splitext(source.format(lang=lang))[0] + f".{ext}")
+            os.replace(produced, out(f"{LEGACY_STEM[ext]}-{lang}.{ext}"))
+
+
 def speech(lang, c):
     with tempfile.TemporaryDirectory() as tmp:
         aiff = os.path.join(tmp, "speech.aiff")
@@ -280,7 +311,7 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     only = set(sys.argv[1:])
     for lang, c in CONTENT.items():
-        for build in (text_file, web_page, pdf_text, pdf_long, pdf_scan, screenshot, photo, docx, pptx, xlsx, opendocument, speech):
+        for build in (text_file, web_page, pdf_text, pdf_long, pdf_scan, screenshot, photo, docx, pptx, xlsx, legacy, opendocument, speech):
             if only and build.__name__ not in only:
                 continue
             build(lang, c)

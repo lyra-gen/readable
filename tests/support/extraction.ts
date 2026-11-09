@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
 import * as path from 'path';
 import { ManagedDocling } from '../../src/extract/docling/managed/manager';
+import type { ManagedDoclingDeps } from '../../src/extract/docling/managed/manager';
 import { ExtractorRegistry } from '../../src/extract/registry';
 import type { ExtractResult } from '../../src/extract/types';
 import { detectType } from '../../src/pipeline/detect';
@@ -22,7 +23,7 @@ export interface Extracted {
  * OCR when needed in English and Russian with the automatic engine, accurate
  * tables, speech language detected, timestamps on, no pictures or vision.
  */
-export async function managedDocling(): Promise<{ docling: ManagedDocling; skip: string | false; skipSpeech: string | false }> {
+export async function managedDocling(overrides: Partial<ManagedDoclingDeps> = {}): Promise<{ docling: ManagedDocling; skip: string | false; skipSpeech: string | false }> {
 	const docling = new ManagedDocling({
 		fullPath: (p) => p,
 		options: () => ({
@@ -39,6 +40,7 @@ export async function managedDocling(): Promise<{ docling: ManagedDocling; skip:
 		devLog: (line) => {
 			if (process.env.READABLE_TEST_LOG) process.stderr.write(`${line}\n`);
 		},
+		...overrides,
 	});
 	await docling.init();
 	const skip = docling.ready ? false : 'managed Docling is not installed on this machine (Settings › Extraction › Docling)';

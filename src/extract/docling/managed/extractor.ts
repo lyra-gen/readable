@@ -9,6 +9,9 @@ import { mapConvertResponse } from '../response';
 import type { ConvertResponse, ConvertStatus } from '../response';
 import type { ManagedDocling, ManagedDoclingDeps } from './manager';
 import { SidecarError, SidecarExited } from './sidecar';
+import { convertWithTextutil, isLegacyOffice, legacyRoute } from './legacy-office';
+
+export { isLegacyOffice };
 import { createHash } from 'crypto';
 import { promises as fs } from 'fs';
 import * as path from 'path';
@@ -27,14 +30,6 @@ const RECORDING_ALLOWANCE = 0.5;
 const MAX_RESENDS = 3;
 /** Checkpoints older than this belong to jobs that will not come back. */
 const CHECKPOINT_MAX_AGE_MS = 7 * 24 * 60 * 60_000;
-
-/** .doc, .xls and .ppt: Docling opens them only through LibreOffice, which Readable does not install yet. */
-const LEGACY_OFFICE_MESSAGE = "Readable can't read old Office files (.doc, .xls, .ppt) yet. Save this one as .docx, .xlsx or .pptx and it will be picked up.";
-
-export function isLegacyOffice(mime: string, filePath: string): boolean {
-	if (['application/msword', 'application/vnd.ms-excel', 'application/vnd.ms-powerpoint'].includes(mime)) return true;
-	return mime === 'application/x-cfb' && /\.(doc|dot|xls|xlt|ppt|pot|pps)$/i.test(filePath);
-}
 
 function sha256(text: string): string {
 	return createHash('sha256').update(text).digest('hex');
@@ -91,20 +86,47 @@ export class ManagedDoclingExtractor implements Extractor {
 				message: installing ? 'Docling is still installing.' : "Docling isn't installed. Install it in Readable's settings.",
 			};
 		}
-		if (isLegacyOffice(input.mime, input.path)) return { status: 'failed', code: 'legacy-office', message: LEGACY_OFFICE_MESSAGE };
-		input.onProgress?.('extracting');
-		await this.deps.prepare?.();
-		void this.pruneCheckpoints();
-		for (let resends = 0; ; resends++) {
-			const result = await this.attempt(input, signal, resends < MAX_RESENDS);
-			if (result !== RESEND) return result;
-			throwIfAborted(signal);
-			input.log?.('info', 'Docling restarted for another file; trying again');
+		let source = this.deps.fullPath(input.path);
+		let libreOffice: string | null = null;
+		let converted: string | null = null;
+		if (isLegacyOffice(input.mime, input.path)) {
+			const route = await legacyRoute(input.mime, input.path, this.deps.findLibreOffice);
+			if (route.via === 'none') return { status: 'failed', code: 'legacy-office', message: route.message };
+			if (route.via === 'libreoffice') {
+				libreOffice = route.command;
+				input.log?.('info', `Old Office file; LibreOffice converts it (${route.command})`);
+			} else {
+				input.log?.('info', 'Old Word file; converting it with macOS textutil');
+				try {
+					converted = await convertWithTextutil(source, path.join(this.managed.paths.tmp, `legacy-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`), signal);
+				} catch (error) {
+					if (isAbort(error) || signal.aborted) throw abortError();
+					return { status: 'failed', code: 'legacy-office', message: `macOS couldn't read this Word file: ${errorMessage(error)}` };
+				}
+				source = converted;
+			}
+		}
+		try {
+			input.onProgress?.('extracting');
+			await this.deps.prepare?.();
+			void this.pruneCheckpoints();
+			for (let resends = 0; ; resends++) {
+				const result = await this.attempt(input, source, libreOffice, signal, resends < MAX_RESENDS);
+				if (result !== RESEND) return result;
+				throwIfAborted(signal);
+				input.log?.('info', 'Docling restarted for another file; trying again');
+			}
+		} finally {
+			if (converted) await fs.rm(path.dirname(converted), { recursive: true, force: true });
 		}
 	}
 
-	/** One send to the sidecar; RESEND when it was killed for another request and `canResend`. */
-	private async attempt(input: ExtractInput, signal: AbortSignal, canResend: boolean): Promise<ExtractResult | typeof RESEND> {
+	/**
+	 * One send to the sidecar; RESEND when it was killed for another request and `canResend`.
+	 * `source` is the file Docling reads: the input, or its textutil conversion. `libreOffice`: the
+	 * soffice Docling converts an old Office file with.
+	 */
+	private async attempt(input: ExtractInput, source: string, libreOffice: string | null, signal: AbortSignal, canResend: boolean): Promise<ExtractResult | typeof RESEND> {
 		/** Killed deliberately, for a request other than `own`: this one did nothing wrong. */
 		const killedForAnother = (error: unknown, own: number | null) =>
 			canResend && error instanceof SidecarExited && error.killedFor !== undefined && error.killedFor !== own;
@@ -138,6 +160,7 @@ export class ManagedDoclingExtractor implements Extractor {
 			...(options.vision ? { vision: { url: options.vision.url, api_key: options.vision.apiKey, model: options.vision.model, prompt: options.vision.prompt } } : {}),
 			...(imagesDir ? { images_dir: imagesDir } : {}),
 			...(checkpointDir ? { checkpoint_dir: checkpointDir } : {}),
+			...(libreOffice ? { libreoffice: libreOffice } : {}),
 		};
 		/** Once the result is final; an interrupted convert keeps its checkpoint to resume from. */
 		const cleanup = async () => {
@@ -206,7 +229,7 @@ export class ManagedDoclingExtractor implements Extractor {
 			result = await sidecar.request<ConvertResult>(
 				'convert',
 				{
-					path: this.deps.fullPath(input.path),
+					path: source,
 					output_path: outputPath,
 					options: convertOptions,
 				},

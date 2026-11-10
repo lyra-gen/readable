@@ -10,8 +10,6 @@ import type { ConvertResponse, ConvertStatus } from '../response';
 import type { ManagedDocling, ManagedDoclingDeps } from './manager';
 import { SidecarError, SidecarExited } from './sidecar';
 import { convertWithTextutil, isLegacyOffice, legacyRoute } from './legacy-office';
-
-export { isLegacyOffice };
 import { createHash } from 'crypto';
 import { promises as fs } from 'fs';
 import * as path from 'path';
@@ -97,6 +95,8 @@ export class ManagedDoclingExtractor implements Extractor {
 				input.log?.('info', `Old Office file; LibreOffice converts it (${route.command})`);
 			} else {
 				input.log?.('info', 'Old Word file; converting it with macOS textutil');
+				const options = this.deps.options();
+				if (options.figures || options.describePictures) input.log?.('warn', 'Pictures in old Word files need LibreOffice; this one is read without them');
 				try {
 					converted = await convertWithTextutil(source, path.join(this.managed.paths.tmp, `legacy-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`), signal);
 				} catch (error) {

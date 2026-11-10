@@ -3,8 +3,7 @@ import { promises as fs } from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { test } from 'node:test';
-import { isLegacyOffice } from '../../src/extract/docling/managed/extractor';
-import { describeLegacySupport, findLibreOffice, isLegacyWord, legacyRoute, libreOfficeCandidates, missingMessage } from '../../src/extract/docling/managed/legacy-office';
+import { describeLegacySupport, findLibreOffice, isLegacyOffice, isLegacyWord, isSnap, legacyRoute, libreOfficeCandidates, missingMessage } from '../../src/extract/docling/managed/legacy-office';
 
 void test('old binary Office files are recognised; their modern and HTML look-alikes are not', () => {
 	for (const name of ['report.doc', 'letter.DOT', 'Budget.XLS', 'template.xlt', 'slides.ppt', 'theme.pot', 'show.pps']) {
@@ -32,6 +31,19 @@ void test('LibreOffice is looked for where each system installs it', () => {
 	const win = libreOfficeCandidates('win32', { ProgramFiles: 'C:\\Program Files', 'ProgramFiles(x86)': 'C:\\Program Files (x86)', ProgramW6432: 'C:\\Program Files' }, 'C:\\Users\\u');
 	assert.deepEqual(win, ['C:\\Program Files\\LibreOffice\\program\\soffice.exe', 'C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe']);
 	assert.ok(libreOfficeCandidates('linux', {}, '/home/u').includes('/usr/bin/soffice'));
+});
+
+void test('a snap LibreOffice is passed over', async () => {
+	assert.ok(await isSnap('/snap/bin/libreoffice', 'linux'));
+	assert.ok(!(await isSnap('/usr/bin/soffice', 'darwin')));
+	const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'readable-snap-'));
+	try {
+		const link = path.join(dir, 'libreoffice');
+		await fs.symlink('/usr/bin/snap', link);
+		assert.ok(await isSnap(link, 'linux'));
+	} finally {
+		await fs.rm(dir, { recursive: true, force: true });
+	}
 });
 
 void test('a soffice on PATH is found', async () => {
@@ -64,6 +76,8 @@ void test('messages and settings text name what to install', () => {
 	assert.match(missingMessage('darwin'), /\.xls, \.ppt/);
 	assert.doesNotMatch(missingMessage('darwin'), /\.doc\b/);
 	assert.match(missingMessage('win32'), /\.doc, \.xls, \.ppt/);
+	assert.match(missingMessage('linux'), /not the snap/);
+	assert.doesNotMatch(missingMessage('win32'), /snap/);
 	assert.equal(describeLegacySupport('/x/soffice', 'linux'), 'Read with LibreOffice.');
 	assert.match(describeLegacySupport(null, 'darwin'), /macOS/);
 	assert.match(describeLegacySupport(null, 'win32'), /need LibreOffice/);

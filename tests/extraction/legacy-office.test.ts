@@ -93,3 +93,24 @@ void describe('old Office files without LibreOffice', () => {
 		});
 	}
 });
+
+void describe('old Word files through textutil, with pictures on', () => {
+	let docling: ManagedDocling;
+	let skip: string | false = false;
+	before(async () => {
+		if (process.platform !== 'darwin') {
+			skip = 'textutil is macOS only';
+			return;
+		}
+		// Pictures saved, as Readable's default: the log must say they were left out
+		({ docling, skip } = await managedDocling({ findLibreOffice: () => Promise.resolve(null) }, { figures: true }));
+	});
+	after(() => docling?.dispose());
+
+	void test('warns that pictures need LibreOffice', { timeout: TIMEOUT_MS }, async (t) => {
+		if (skip) return t.skip(skip);
+		const out = await extract(docling, 'doc-en.doc');
+		assert.equal(out.result.status, 'extracted');
+		assert.ok(out.log.some((l) => l.startsWith('warn: Pictures in old Word files need LibreOffice')), out.log.join('\n'));
+	});
+});

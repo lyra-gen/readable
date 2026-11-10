@@ -79,7 +79,7 @@ The AI commands (`src/ui/ai-commands.ts`, `src/llm/enrich-notes.ts`, `src/notes/
   - *Crash*: the job fails with `docling-crash` and the stderr tail in its log. One process exit counts as one crash however many requests it took down; two in a row count as the engine being unavailable.
   - *Engine unavailable* (not installed, still installing, cannot start, repeated crashes): the queue pauses with one notice instead of failing every remaining job; when Docling is not installed the notice offers Install. Once Docling is ready, those jobs are retried and the queue resumes.
   - *AI failures* are warnings, never job failures. A failed job is not retried on its own; Retry and Retry all failed are the user's. A job interrupted by Obsidian closing or a reload starts again at the next load.
-  - Old binary Office files (.doc, .xls, .ppt) fail at once with a message, since Docling reads them only through LibreOffice.
+  - *Old binary Office files* (.doc, .dot, .xls, .xlt, .ppt, .pot, .pps): Docling reads them only after LibreOffice converts them. `legacy-office.ts` looks for an installed LibreOffice on each such file (install paths per OS, then PATH; a snap is passed over, its sandbox cannot read Docling's temporary files) and the sidecar hands it to Docling as `DOCLING_LIBREOFFICE_CMD`. Without one, a Mac converts .doc/.dot with textutil, which keeps text and tables but not pictures; anything else fails at once with `legacy-office` and a message saying to install LibreOffice.
 
 ## Code map
 

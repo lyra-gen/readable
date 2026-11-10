@@ -23,7 +23,11 @@ export interface Extracted {
  * OCR when needed in English and Russian with the automatic engine, accurate
  * tables, speech language detected, timestamps on, no pictures or vision.
  */
-export async function managedDocling(overrides: Partial<ManagedDoclingDeps> = {}): Promise<{ docling: ManagedDocling; skip: string | false; skipSpeech: string | false }> {
+export async function managedDocling(
+	overrides: Partial<ManagedDoclingDeps> = {},
+	/** Changes to the options below, e.g. pictures on. */
+	optionOverrides: Partial<ReturnType<ManagedDoclingDeps['options']>> = {},
+): Promise<{ docling: ManagedDocling; skip: string | false; skipSpeech: string | false }> {
 	const docling = new ManagedDocling({
 		fullPath: (p) => p,
 		options: () => ({
@@ -36,6 +40,7 @@ export async function managedDocling(overrides: Partial<ManagedDoclingDeps> = {}
 			vision: null,
 			describePictures: false,
 			describeImages: false,
+			...optionOverrides,
 		}),
 		devLog: (line) => {
 			if (process.env.READABLE_TEST_LOG) process.stderr.write(`${line}\n`);

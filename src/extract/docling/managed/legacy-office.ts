@@ -8,8 +8,10 @@ import * as path from 'path';
  * having LibreOffice convert them first, and LibreOffice is too big to
  * install for the user, so Readable uses one that is already there. On a Mac
  * a .doc can also go through textutil, which ships with macOS, when there is
- * no LibreOffice. Without either, the job fails with a message saying what
- * to install.
+ * no LibreOffice; textutil keeps text and tables but drops pictures. Without
+ * either, the job fails with a message saying what to install. A snap
+ * LibreOffice is passed over: its sandbox cannot read the temporary files
+ * Docling hands it.
  */
 
 export const LIBREOFFICE_DOWNLOAD_URL = 'https://www.libreoffice.org/download/download-libreoffice/';
@@ -54,7 +56,6 @@ export function libreOfficeCandidates(
 				'/usr/bin/libreoffice',
 				'/usr/local/bin/soffice',
 				'/usr/local/bin/libreoffice',
-				'/snap/bin/libreoffice',
 				'/var/lib/flatpak/exports/bin/org.libreoffice.LibreOffice',
 				path.join(home, '.local', 'share', 'flatpak', 'exports', 'bin', 'org.libreoffice.LibreOffice'),
 			];
@@ -94,9 +95,17 @@ async function isExecutable(file: string, platform: NodeJS.Platform): Promise<bo
 export async function findLibreOffice(platform: NodeJS.Platform = process.platform, env: NodeJS.ProcessEnv = process.env): Promise<string | null> {
 	const candidates = [...libreOfficeCandidates(platform, env), ...(await optCandidates(platform)), ...pathCandidates(platform, env)];
 	for (const candidate of candidates) {
-		if (await isExecutable(candidate, platform)) return candidate;
+		if ((await isExecutable(candidate, platform)) && !(await isSnap(candidate, platform))) return candidate;
 	}
 	return null;
+}
+
+/** A snap command is a link to /usr/bin/snap (or lives under /snap); confined, it cannot see /tmp or hidden folders. */
+export async function isSnap(file: string, platform: NodeJS.Platform = process.platform): Promise<boolean> {
+	if (platform !== 'linux') return false;
+	// realpath needs the target to exist; readlink still says where a link points when it cannot be followed
+	const real = await fs.realpath(file).catch(() => fs.readlink(file).then((target) => path.posix.resolve(path.posix.dirname(file), target)).catch(() => file));
+	return real === '/usr/bin/snap' || file.startsWith('/snap/') || real.startsWith('/snap/');
 }
 
 /** How an old Office file can be read on this computer right now. */
@@ -115,15 +124,16 @@ export async function legacyRoute(
 }
 
 export function missingMessage(platform: NodeJS.Platform = process.platform): string {
-	return textutilAvailable(platform)
-		? "Old Excel and PowerPoint files (.xls, .ppt) need LibreOffice. Install it from libreoffice.org, or save this one as .xlsx or .pptx."
-		: "Old Office files (.doc, .xls, .ppt) need LibreOffice. Install it from libreoffice.org, or save this one as .docx, .xlsx or .pptx.";
+	if (textutilAvailable(platform)) return 'Old Excel and PowerPoint files (.xls, .ppt) need LibreOffice. Install it from libreoffice.org, or save this one as .xlsx or .pptx.';
+	// The snap is skipped, so someone who has only that is told which install works
+	const from = platform === 'linux' ? 'libreoffice.org or your package manager (not the snap)' : 'libreoffice.org';
+	return `Old Office files (.doc, .xls, .ppt) need LibreOffice. Install it from ${from}, or save this one as .docx, .xlsx or .pptx.`;
 }
 
 /** Settings: what happens to old Office files on this computer, in one sentence. */
 export function describeLegacySupport(libreOffice: string | null, platform: NodeJS.Platform = process.platform): string {
 	if (libreOffice) return 'Read with LibreOffice.';
-	if (textutilAvailable(platform)) return '.doc files are read with macOS; .xls and .ppt need LibreOffice.';
+	if (textutilAvailable(platform)) return '.doc files are read with macOS but without pictures; .xls and .ppt need LibreOffice.';
 	return '.doc, .xls and .ppt files need LibreOffice.';
 }
 
